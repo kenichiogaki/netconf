@@ -88,10 +88,16 @@ const (
 	Startup Datastore = "startup" //
 )
 
+type Filter struct {
+	XMLName xml.Name `xml:"filter,omitempty"`
+	Type    string   `xml:"type,attr"`
+	Content string `xml:",innerxml"` 
+}
+
 type GetConfigReq struct {
 	XMLName xml.Name  `xml:"get-config"`
 	Source  Datastore `xml:"source"`
-	// Filter
+	Filter	*Filter	  //When the member Filter doesn't exist, MarshalXML doen't create corresponding XML tag.  
 }
 
 type GetConfigReply struct {
@@ -103,9 +109,21 @@ type GetConfigReply struct {
 // `source` is the datastore to query.
 //
 // [RFC6241 7.1]: https://www.rfc-editor.org/rfc/rfc6241.html#section-7.1
-func (s *Session) GetConfig(ctx context.Context, source Datastore) ([]byte, error) {
+func (s *Session) GetConfig(ctx context.Context, source Datastore, filterContent ...string) ([]byte, error) {
 	req := GetConfigReq{
 		Source: source,
+	}
+
+	var err error
+	for index, value := range filterContent {
+	   if index > 0 {   //The number of filterContent must be zero, i.e. no filter, or one.
+	      err = fmt.Errorf("argument count must not exceed three.")
+	      break
+	   }
+	   req.Filter = &Filter{
+	   	Type: "subtree",
+		Content: value,
+	       	}
 	}
 
 	var resp GetConfigReply
@@ -113,7 +131,7 @@ func (s *Session) GetConfig(ctx context.Context, source Datastore) ([]byte, erro
 		return nil, err
 	}
 
-	return resp.Config, nil
+	return resp.Config, err
 }
 
 // MergeStrategy defines the strategies for merging configuration in a
@@ -340,11 +358,33 @@ func (s *Session) Unlock(ctx context.Context, target Datastore) error {
 	return s.Call(ctx, &req, &resp)
 }
 
-/*
-func (s *Session) Get(ctx context.Context,  filter Filter) error {
-	panic("unimplemented")
+type GetReq struct {
+	XMLName	xml.Name  `xml:"get"`
+	Filter	*Filter
 }
-*/
+
+func (s *Session) Get(ctx context.Context, filter ...string) ([]byte, error) {
+	req := GetReq{}
+
+	var err error
+	for index, value := range filter {
+	   if index > 0 {
+	      err = fmt.Errorf("argument count must not exceed two.")
+	      break
+	   }
+	   req.Filter = &Filter{
+	   	Type: "subtree",
+		Content: value,
+	       	}
+	}
+
+	var resp GetConfigResp
+	if err := s.Call(ctx, &req, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Config, err
+}
 
 type KillSessionReq struct {
 	XMLName   xml.Name `xml:"kill-session"`
