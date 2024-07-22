@@ -378,7 +378,7 @@ func (s *Session) Get(ctx context.Context, filter ...string) ([]byte, error) {
 	       	}
 	}
 
-	var resp GetConfigResp
+	var resp GetConfigReply
 	if err := s.Call(ctx, &req, &resp); err != nil {
 		return nil, err
 	}
