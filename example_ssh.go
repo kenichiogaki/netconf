@@ -208,6 +208,7 @@ func main() {
 	panic(err)
      }
 
+     //Marshal Interface struct to XML
      xmlBytes, err := xml.MarshalIndent(interfacesData, "", "  ")
      if err != nil {
 	log.Fatalf("error: %v", err)
