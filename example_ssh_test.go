@@ -7,7 +7,7 @@ import (
 	"os"
 	"fmt"
 
-	"github.com/nemith/netconf"
+	"github.com/kenichiogaki/netconf"
 	ncssh "github.com/nemith/netconf/transport/ssh"
 	"golang.org/x/crypto/ssh"
 	"encoding/xml"
