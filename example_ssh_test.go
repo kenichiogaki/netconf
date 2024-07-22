@@ -6,6 +6,7 @@ import (
 	"time"
 	"os"
 	"fmt"
+	"testing"
 
 	"github.com/kenichiogaki/netconf"
 	ncssh "github.com/nemith/netconf/transport/ssh"
@@ -85,7 +86,7 @@ type Interfaces struct {
 
 const sshAddr = "172.18.0.50:22"	//put your netconf device's IP address 
 
-func Example_ssh() {
+func TestSSH(t *testing.T) {
      //example interface struct instance
      var subInterfaceData []SubInterface
      for i := 0; i < 2; i++ {

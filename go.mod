@@ -7,6 +7,8 @@ require (
 	golang.org/x/crypto v0.24.0
 )
 
+require github.com/nemith/netconf v0.0.1
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
